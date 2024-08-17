@@ -5,15 +5,26 @@ import mail_icon from "../../assets/mail_icon.svg";
 import location_icon from "../../assets/location_icon.svg";
 import call_icon from "../../assets/call_icon.svg";
 
+const web3formsApiKey = import.meta.env.VITE_WEB3FORMS;
+
 const Contact = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    formData.append("access_key", "d553bdda-3948-4ea9-be48-a95402c1bcf4");
+    formData.append("access_key", web3formsApiKey);
 
     const object = Object.fromEntries(formData);
     const json = JSON.stringify(object);
+
+    if (
+      object.name.trim() === "" ||
+      object.email.trim() === "" ||
+      object.message.trim() === ""
+    ) {
+      alert("Please fill all the fields");
+      return;
+    }
 
     const res = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
@@ -25,6 +36,9 @@ const Contact = () => {
     }).then((res) => res.json());
 
     if (res.success) {
+      document.getElementById("name").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("message").value = "";
       alert(res.message);
     }
   };
@@ -56,11 +70,22 @@ const Contact = () => {
         </div>
         <form onSubmit={onSubmit} className="contact-right">
           <label htmlFor="">Your Name</label>
-          <input type="text" placeholder="Enter Your Name" name="name" />
+          <input
+            type="text"
+            placeholder="Enter Your Name"
+            name="name"
+            id="name"
+          />
           <label htmlFor="">Your Email</label>
-          <input type="email" placeholder="Enter Your Email" name="email" />
+          <input
+            type="email"
+            placeholder="Enter Your Email"
+            name="email"
+            id="email"
+          />
           <label htmlFor="">Write your message here</label>
           <textarea
+            id="message"
             name="message"
             rows="8"
             placeholder="Enter Your Message"
